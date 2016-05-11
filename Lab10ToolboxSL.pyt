@@ -368,7 +368,37 @@ class Scenarioforeachfield(object):
             arcpy.gp.StreamToFeature_sa(Reclass_F, flowDirection, StreamT_F, "SIMPLIFY")
             arcpy.gp.StreamToFeature_sa(Reclass_Z, flowDirection, StreamT_Z, "SIMPLIFY")
             arcpy.gp.StreamToFeature_sa(Reclass_C, flowDirection, StreamT_C, "SIMPLIFY")
+          
+            StreamInvPts = "StreamInvPts"
 
+            inRasterList = " 'C:/ss/output/flowAccEN1.tif' flowAccEN; 'C:/ss/output/flowAccEP1.tif' flowAccEP;'C:/ss/output/flowAccES1.tif' flowAccES;'C:/ss/output/flowAccEC1.tif' flowAccEC;'C:/ss/output/flowAccEZ1.tif' flowAccEZ;'C:/ss/output/flowAccEF1.tif' flowAccEF;'C:/ss/output/futureSe1.tif' futureSe;'C:/ss/output/futureFe1.tif' futureFe;'C:/ss/output/futureN1.tif' futureN;'C:/ss/output/futureC1.tif' futureC;'C:/ss/output/futureP1.tif' futureP;'C:/ss/output/futureZ1.tif' futureZ;"
+
+
+            arcpy.gp.ExtractMultiValuesToPoints_sa(StreamInvPts, inRasterList, "NONE")
+
+            arcpy.AddField_management("StreamInvPts", "N", "FLOAT")
+            arcpy.AddField_management("StreamInvPts", "P", "FLOAT")
+            arcpy.AddField_management("StreamInvPts", "S", "FLOAT")
+            arcpy.AddField_management("StreamInvPts", "C", "FLOAT")
+            arcpy.AddField_management("StreamInvPts", "F", "FLOAT")
+            arcpy.AddField_management("StreamInvPts", "Z", "FLOAT")
+            arcpy.SelectLayerByAttribute_management(StreamInvPts, "NEW_SELECTION", "flowAccEN > 0")
+            arcpy.CalculateField_management(StreamInvPts, "N", "[futureN] / [flowAccEN]", "VB", "")
+
+            arcpy.SelectLayerByAttribute_management(StreamInvPts, "NEW_SELECTION", "flowAccEP > 0")
+            arcpy.CalculateField_management(StreamInvPts, "P", "[futureP] / [flowAccEP]", "VB", "")
+            arcpy.SelectLayerByAttribute_management(StreamInvPts, "NEW_SELECTION", "flowAccEC > 0")
+            arcpy.CalculateField_management(StreamInvPts, "C", "[futureC] / [flowAccEC]", "VB", "")
+            arcpy.SelectLayerByAttribute_management(StreamInvPts, "NEW_SELECTION", "flowAccEZ > 0")
+            arcpy.CalculateField_management(StreamInvPts, "Z", "[futureZ] / [flowAccEZ]", "VB", "")
+
+            arcpy.SelectLayerByAttribute_management(StreamInvPts, "NEW_SELECTION", "flowAccEF = 0")
+            arcpy.SelectLayerByAttribute_management(StreamInvPts, "SWITCH_SELECTION", "")
+            arcpy.CalculateField_management(StreamInvPts, "F", "[futureFe] / [flowAccEF]", "VB", "")
+            arcpy.SelectLayerByAttribute_management(StreamInvPts, "NEW_SELECTION", "flowAccES > 0")
+            arcpy.CalculateField_management(StreamInvPts, "S", "[futureSe] / [flowAccES]", "VB", "")
+
+            arcpy.SelectLayerByAttribute_management(StreamInvPts, "CLEAR_SELECTION", "")
 
 			
         except Exception as err:
